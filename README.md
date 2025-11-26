@@ -45,6 +45,7 @@ O aplicativo é configurado para inicializar automaticamente.
 
 
 🛠️ Instalação e Execução
+
 1️⃣ Instale as dependências
 npm install
 
