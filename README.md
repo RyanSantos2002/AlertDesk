@@ -47,15 +47,14 @@ O aplicativo é configurado para inicializar automaticamente.
 🛠️ Instalação e Execução
 
 1️⃣ Instale as dependências
-npm install
+- npm install
 
 2️⃣ Rode o app em modo desenvolvimento
-npm start
+- npm start
 
 3️⃣ Gerar instalador (EXE)
-npm run build
-
-
+- npm run build
+  
 O instalador será gerado na pasta /dist.
 
 ## 📁 Estrutura do Projeto
