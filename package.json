@@ -1,0 +1,50 @@
+{
+  "name": "alertdesk-receptor",
+  "version": "1.0.0",
+  "description": "AlertDesk Receptor - Recebe alertas internos",
+  "author": "Ryan",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "play-sound": "^1.1.6",
+    "socket.io": "^4.7.2"
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-builder": "^23.6.0"
+  },
+  "build": {
+    "appId": "com.alertdesk.receptor",
+    "productName": "AlertDesk Receptor",
+    "directories": {
+      "output": "dist"
+    },
+
+    "files": [
+      "main.js",
+      "preload.js",
+      "ui/**/*",
+      "config/**/*",
+      "node_modules/**/*"
+    ],
+
+    "asar": true,
+
+    "win": {
+      "target": "nsis",
+      "icon": "ui/icon.ico"
+    },
+
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "AlertDesk Receptor"
+    }
+  }
+}
