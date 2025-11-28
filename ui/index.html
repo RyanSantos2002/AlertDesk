@@ -3,22 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <title>AlertDesk — Centro de Alertas</title>
-
     <style>
-      /* ========================== GLOBAL ========================== */
-
+      /* GERAL */
       html,
       body {
         margin: 0;
         padding: 0;
         overflow-x: hidden !important;
         background: #0a0f1a;
-        font-family: Arial, sans-serif;
+        font-family: "Segoe UI", sans-serif;
         color: #fff;
+        height: 100%;
       }
-
       ::-webkit-scrollbar {
-        width: 10px;
+        width: 8px;
       }
       ::-webkit-scrollbar-track {
         background: #0d1117;
@@ -28,37 +26,113 @@
         border-radius: 10px;
       }
 
+      /* LOADING */
+      .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0a0f1a;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s;
+      }
+      .spinner {
+        width: 50px;
+        height: 50px;
+        border: 4px solid rgba(29, 172, 255, 0.2);
+        border-top: 4px solid #1dacff;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* WELCOME SCREEN */
+      .welcome-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #0a0f1a;
+        z-index: 9998;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 1;
+        transition: opacity 0.8s, visibility 0.8s;
+      }
+      .welcome-content {
+        text-align: center;
+        transform: scale(0.9);
+        animation: popIn 0.5s forwards;
+      }
+      .welcome-title {
+        font-size: 24px;
+        color: #94a3b8;
+        margin-bottom: 10px;
+      }
+      .welcome-name {
+        font-size: 42px;
+        font-weight: bold;
+        background-clip: text;
+        background: linear-gradient(90deg, #1dacff, #006eff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        letter-spacing: 1px;
+      }
+      @keyframes popIn {
+        to {
+          transform: scale(1);
+        }
+      }
+      .hidden {
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+
+      /* UI PRINCIPAL */
       .container {
         width: 580px;
         max-width: 580px;
         margin: 40px auto;
         padding-bottom: 30px;
+        opacity: 0;
+        animation: fadeInApp 1s forwards 1s;
       }
-
+      @keyframes fadeInApp {
+        to {
+          opacity: 1;
+        }
+      }
       h1 {
         text-align: center;
         margin-bottom: 25px;
         font-size: 36px;
-        font-weight: bold;
         color: #1dacff;
-        text-shadow: 0 0 12px #1dacff, 0 0 25px #1dacffaa;
+        text-shadow: 0 0 12px rgba(29, 172, 255, 0.4);
       }
-
-      /* ========================== CARD PRINCIPAL ========================== */
-
       .card {
         background: rgba(255, 255, 255, 0.03);
         padding: 30px;
         border-radius: 25px;
         border: 1px solid #1e3a8a;
-        box-shadow: 0 0 25px rgba(30, 58, 138, 0.3);
+        box-shadow: 0 0 25px rgba(30, 58, 138, 0.2);
       }
-
-      .card h2 {
-        margin-bottom: 14px;
-        font-size: 22px;
-      }
-
       input {
         width: 95%;
         padding: 12px;
@@ -66,16 +140,9 @@
         border-radius: 10px;
         background: rgba(255, 255, 255, 0.06);
         border: 1px solid #1e3a8a;
-        color: #cbd5e1;
+        color: #fff;
         margin-bottom: 18px;
       }
-
-      input::placeholder {
-        color: #bbb;
-      }
-
-      /* ========================== BOTÕES ========================== */
-
       button {
         padding: 12px;
         width: 100%;
@@ -85,116 +152,78 @@
         color: #fff;
         font-size: 15px;
         cursor: pointer;
-        transition: 0.25s;
-        box-shadow: 0 0 10px #1dacff33;
+        transition: 0.2s;
       }
-
       button:hover {
-        background: #1dacff33;
+        background: rgba(29, 172, 255, 0.2);
         box-shadow: 0 0 15px #1dacff;
       }
-
-      /* ========================== GRID DE USUÁRIOS ========================== */
-
+      #btnAdmin {
+        background: rgba(185, 28, 28, 0.2);
+        border-color: #ef4444;
+        margin-top: 10px;
+        color: #fca5a5;
+      }
+      #btnAdmin:hover {
+        background: #b91c1c;
+        color: white;
+      }
       #listaUsuarios {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 22px;
+        gap: 20px;
         margin-top: 25px;
       }
-
-      /* ========================== CARD DO USUÁRIO ========================== */
-
       .user-card {
         background: #0d1320;
-        padding: 18px;
-        border-radius: 18px;
+        padding: 15px;
+        border-radius: 15px;
         border: 1px solid #243556;
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         text-align: center;
         cursor: pointer;
-        transition: 0.25s;
-        box-shadow: 0 0 10px #0007;
-        min-height: 170px;
         position: relative;
+        transition: 0.2s;
       }
-
       .user-card:hover {
         border-color: #1dacff;
-        box-shadow: 0 0 18px #1dacff, inset 0 0 10px #1dacff33;
-        transform: translateY(-4px) scale(1.04);
+        transform: translateY(-3px);
       }
-
       .avatar {
-        width: 64px;
-        height: 64px;
+        width: 60px;
+        height: 60px;
         border-radius: 50%;
-        background: radial-gradient(circle, #1dacff, #006eff);
+        background: linear-gradient(135deg, #1dacff, #004db3);
         display: flex;
         justify-content: center;
         align-items: center;
-        font-size: 28px;
+        font-size: 24px;
         font-weight: bold;
-        color: white;
-        box-shadow: 0 0 15px #1dacff, 0 0 28px #1dacffaa;
-        margin-bottom: 5px;
       }
-
-      .user-name {
-        font-size: 17px;
-        font-weight: bold;
-        margin-top: -3px;
-      }
-
-      .user-card button {
-        width: 80%;
-        margin-top: 8px;
-      }
-
-      /* ======= EXCLUIR USUÁRIO ======= */
-
       .del-btn {
         position: absolute;
         top: 8px;
         right: 10px;
         color: #ff4d4d;
-        font-size: 16px;
-        cursor: pointer;
-        transition: 0.25s;
+        font-size: 12px;
       }
-
-      .del-btn:hover {
-        color: #ff1a1a;
-        text-shadow: 0 0 8px #ff4d4d;
-      }
-
-      /* ========================== CARD "+" ========================== */
-
       .add-card {
-        background: #0d1320;
-        border: 2px dashed #1dacff55;
-        border-radius: 18px;
-        color: #1dacff;
-        font-size: 46px;
-        font-weight: bold;
+        border: 2px dashed #334155;
+        border-radius: 15px;
         display: flex;
         justify-content: center;
         align-items: center;
+        font-size: 40px;
+        color: #334155;
         cursor: pointer;
-        box-shadow: 0 0 15px #1dacff22;
-        transition: 0.25s;
       }
-
       .add-card:hover {
         border-color: #1dacff;
-        box-shadow: 0 0 25px #1dacff;
-        transform: scale(1.08);
+        color: #1dacff;
       }
-
-      /* ========================== MODAL ========================== */
 
       .modal {
         display: none;
@@ -203,82 +232,110 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        backdrop-filter: blur(4px);
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 20000;
+        backdrop-filter: blur(5px);
       }
-
       .modal-content {
-        width: 350px;
-        margin: 120px auto;
+        width: 320px;
+        margin: 15% auto;
         padding: 25px;
         background: #0f172a;
         border-radius: 15px;
         border: 1px solid #1e3a8a;
-        box-shadow: 0 0 30px rgba(0, 153, 255, 0.4);
-      }
-
-      .modal-content h2 {
         text-align: center;
-        color: #38bdf8;
-        margin-bottom: 20px;
       }
-
       .close {
-        background: #3b4252;
-        border-color: #45506a;
+        background: transparent;
+        border: 1px solid #475569;
         margin-top: 10px;
+        color: #94a3b8;
+      }
+      /* ================= TOAST DE SUCESSO ================= */
+      .success-toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50px); /* Inicia fora da tela */
+        background: #10b981; /* Verde Bonito */
+        color: white;
+        padding: 10px 25px;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: bold;
+        z-index: 9000;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+        transition: transform 0.5s ease-out, opacity 0.5s;
+        opacity: 0; /* Começa invisível */
+        visibility: hidden;
       }
 
-      .close:hover {
-        background: #5b6a80;
+      .success-toast.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateX(-50%) translateY(0); /* Desliza para o centro */
       }
     </style>
   </head>
-
   <body>
+    <div id="successToast" class="success-toast hidden">
+      ✅ Mensagem enviada com sucesso!
+    </div>
+    <div id="loadingOverlay" class="loading-overlay">
+      <div class="spinner"></div>
+      <p
+        id="loadingText"
+        style="color: #64748b; font-size: 14px; margin-top: 10px"
+      >
+        Iniciando sistema...
+      </p>
+    </div>
+
+    <div id="welcomeScreen" class="welcome-overlay hidden">
+      <div class="welcome-content">
+        <div class="welcome-title">Bem-vindo de volta,</div>
+        <div id="welcomeName" class="welcome-name">Usuário</div>
+      </div>
+    </div>
+
     <div class="container">
       <h1>AlertDesk</h1>
-
       <div class="card">
         <h2>Enviar Alerta</h2>
-
-        <input id="mensagem" placeholder="Digite sua mensagem..." />
-
-        <button onclick="enviarParaTodos()">Enviar para TODOS</button>
-
-        <h3 style="margin-top: 25px">Usuários Conectados</h3>
-
-        <div id="listaUsuarios">
-          <p style="opacity: 0.6; grid-column: span 3">
-            Nenhum usuário conectado...
-          </p>
-        </div>
-
-        <!-- MODAL ADICIONAR USUÁRIO -->
+        <input
+          id="mensagem"
+          placeholder="Digite sua mensagem..."
+          style="display: none"
+        />
+        <button
+          id="btnEnviarTodos"
+          onclick="enviarParaTodos()"
+          style="display: none"
+        >
+          Enviar para TODOS
+        </button>
+        <button
+          id="btnAdmin"
+          onclick="abrirPainelAdmin()"
+          style="display: none"
+        >
+          Painel Admin 🔒
+        </button>
+        <h3 style="margin-top: 25px; font-size: 18px; color: #cbd5e1">
+          Colegas Online
+        </h3>
+        <div id="listaUsuarios"></div>
         <div id="modalAdd" class="modal">
           <div class="modal-content">
-            <h2>Adicionar Usuário</h2>
-
-            <input id="novoNome" placeholder="Nome do usuário" />
-            <input id="novoIp" placeholder="IP do usuário" />
-
-            <button onclick="salvarUsuario()">Adicionar</button>
+            <h3>Adicionar à Lista</h3>
+            <input id="novoNome" placeholder="Nome" />
+            <input id="novoIp" placeholder="IP" />
+            <button onclick="salvarUsuario()">Salvar</button>
             <button class="close" onclick="fecharModal()">Cancelar</button>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- MODAL PRIMEIRO NOME -->
-    <div id="modalNome" class="modal" style="display: none">
-      <div class="modal-content">
-        <h2>Digite seu nome</h2>
-        <input id="inputNomeInicial" placeholder="Seu nome" />
-        <button onclick="salvarNomeInicial()">Salvar</button>
-      </div>
-    </div>
-
-    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <script src="receptor.js"></script>
   </body>
 </html>

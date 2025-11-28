@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Painel Administrativo</title>
+    <style>
+      /* ================= ESTILOS GERAIS ================= */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0a0f1a;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #1e3a8a;
+        border-radius: 5px;
+      }
+      body {
+        background: #0a0f1a;
+        color: #fff;
+        font-family: "Segoe UI", sans-serif;
+        padding: 20px;
+        margin: 0;
+        -webkit-app-region: no-drag;
+        overflow-y: auto;
+      }
+
+      /* LOADING */
+      #simpleLoading {
+        display: none;
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #1e3a8a;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        z-index: 10000;
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      /* MODAIS */
+      .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        z-index: 20000;
+        justify-content: center;
+        align-items: center;
+      }
+      .modal-box {
+        background: #0f172a;
+        border: 1px solid #1e3a8a;
+        padding: 25px;
+        border-radius: 12px;
+        width: 300px;
+        text-align: center;
+      }
+      .modal-input {
+        width: 90%;
+        padding: 10px;
+        margin: 15px 0;
+        background: #0a0f1a;
+        border: 1px solid #334155;
+        color: white;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 16px;
+      }
+      .modal-btns {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      /* TEXTAREA DO JSON */
+      .json-area {
+        width: 100%;
+        height: 150px;
+        background: #0a0f1a;
+        border: 1px solid #334155;
+        color: #cbd5e1;
+        font-family: monospace;
+        font-size: 11px;
+        padding: 10px;
+        resize: vertical;
+        outline: none;
+        border-radius: 6px;
+        margin-bottom: 10px;
+      }
+
+      /* BOTOES GERAIS */
+      .close-app-btn {
+        position: fixed;
+        top: 15px;
+        right: 15px;
+        width: 30px;
+        height: 30px;
+        background: #0a0f1a;
+        border: 1px solid #ef4444;
+        color: #ef4444;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 99999;
+        -webkit-app-region: no-drag;
+      }
+      .btn-import {
+        background: #2563eb;
+        color: white;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-bottom: 20px;
+        display: inline-block;
+      }
+      .btn-import:hover {
+        background: #1d4ed8;
+      }
+
+      h2 {
+        color: #1dacff;
+        text-align: center;
+        border-bottom: 2px solid #1e3a8a;
+        padding-bottom: 15px;
+        margin-top: 10px;
+        -webkit-app-region: drag;
+      }
+
+      /* LISTA DE USUÁRIOS */
+      #listaUsuarios {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        max-width: 800px;
+        margin: 0 auto;
+        min-height: 50px;
+      }
+      .user-row {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid #1e3a8a;
+        border-radius: 8px;
+        padding: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .name {
+        font-size: 16px;
+        font-weight: bold;
+        color: #e2e8f0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .badge-master {
+        background: #7c3aed;
+        color: white;
+      }
+      .badge-admin {
+        background: #d97706;
+        color: white;
+      }
+      .badge-user {
+        background: #0f172a;
+        color: #94a3b8;
+        border: 1px solid #334155;
+      }
+      .badge-blocked {
+        background: #b91c1c;
+        margin-left: 5px;
+      }
+      .badge-muted {
+        background: #be185d;
+        margin-left: 5px;
+      }
+
+      .actions button {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        color: white;
+        font-weight: bold;
+        margin-left: 5px;
+        font-size: 12px;
+      }
+      .btn-gray {
+        background: #334155;
+      }
+      .btn-red {
+        background: #ef4444;
+      }
+      .btn-blue {
+        background: #0ea5e9;
+      }
+      .btn-yellow {
+        background: #eab308;
+        color: black;
+      }
+
+      /* AGENDAMENTOS */
+      .scheduler-section {
+        max-width: 800px;
+        margin: 30px auto;
+        border-top: 1px solid #1e3a8a;
+        padding-top: 20px;
+      }
+      .scheduler-form {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 15px;
+        border-radius: 10px;
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+      .input-dark {
+        background: #0f172a;
+        border: 1px solid #334155;
+        color: white;
+        padding: 10px;
+        border-radius: 6px;
+        flex: 1;
+      }
+      .btn-save {
+        background: #1dacff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .schedule-item {
+        background: #0f172a;
+        border: 1px solid #1e3a8a;
+        padding: 10px 15px;
+        border-radius: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="simpleLoading">⏳ Processando...</div>
+    <button class="close-app-btn" onclick="window.close()">✖</button>
+    <h2>Painel Administrativo</h2>
+
+    <div style="text-align: center">
+      <button class="btn-import" onclick="abrirModalImportacao()">
+        📥 Importar Lista (JSON)
+      </button>
+    </div>
+
+    <div id="importModal" class="modal-overlay">
+      <div class="modal-box" style="width: 500px">
+        <h3>📥 Importar Banco de Dados</h3>
+        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 10px">
+          Cole o JSON completo aqui.
+        </p>
+        <textarea
+          id="jsonInput"
+          class="json-area"
+          placeholder='{ "users": { ... } }'
+        ></textarea>
+        <input
+          type="password"
+          id="senhaImport"
+          class="modal-input"
+          placeholder="Senha Mestra"
+        />
+        <div class="modal-btns">
+          <button class="btn-gray" onclick="fecharModalImportacao()">
+            Cancelar
+          </button>
+          <button class="btn-blue" onclick="confirmarImportacao()">
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="passwordModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>🔒 Confirmar Ação</h3>
+        <input
+          type="password"
+          id="inputSenha"
+          class="modal-input"
+          placeholder="***"
+          onkeypress="handleEnter(event)"
+        />
+        <div class="modal-btns">
+          <button class="btn-gray" onclick="fecharModalSenha()">
+            Cancelar
+          </button>
+          <button class="btn-blue" onclick="confirmarComSenha()">
+            Confirmar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div
+      id="statusMsg"
+      style="text-align: center; margin: 20px; color: #94a3b8"
+    >
+      Iniciando...
+    </div>
+    <div id="listaUsuarios"></div>
+
+    <div class="scheduler-section">
+      <h3 style="color: #1dacff">📅 Agendamentos</h3>
+      <div class="scheduler-form">
+        <input id="agendaTitulo" class="input-dark" placeholder="Evento" />
+        <input
+          id="agendaHora"
+          type="time"
+          class="input-dark"
+          style="flex: 0 0 100px"
+        />
+        <button onclick="pedirSenhaParaAgendar()" class="btn-save">
+          Salvar
+        </button>
+      </div>
+      <div id="listaAgendamentos"></div>
+    </div>
+
+    <script>
+      let acaoPendente = null;
+      function toggleLoading(show) {
+        document.getElementById("simpleLoading").style.display = show
+          ? "block"
+          : "none";
+      }
+
+      // === FUNÇÕES DE IMPORTAÇÃO ===
+      function abrirModalImportacao() {
+        document.getElementById("importModal").style.display = "flex";
+        document.getElementById("jsonInput").value = "";
+        document.getElementById("senhaImport").value = "";
+      }
+      function fecharModalImportacao() {
+        document.getElementById("importModal").style.display = "none";
+      }
+
+      async function confirmarImportacao() {
+        const jsonTexto = document.getElementById("jsonInput").value;
+        const senha = document.getElementById("senhaImport").value;
+        if (!jsonTexto) return alert("Cole o JSON!");
+        if (!senha) return alert("Digite a senha!");
+
+        let dadosObj;
+        try {
+          dadosObj = JSON.parse(jsonTexto);
+        } catch (e) {
+          return alert("❌ JSON Inválido.");
+        }
+
+        toggleLoading(true);
+        const master = await descobrirMaster();
+        try {
+          const resp = await fetch(`http://${master}:5000/admin/import`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ senha: senha, dados: dadosObj }),
+          });
+          const json = await resp.json();
+          if (resp.ok) {
+            alert(`✅ Sucesso! ${json.total} usuários importados.`);
+            fecharModalImportacao();
+            carregarUsuarios();
+          } else {
+            alert("❌ Erro: " + json.error);
+          }
+        } catch (e) {
+          alert("Erro de rede.");
+        } finally {
+          toggleLoading(false);
+        }
+      }
+
+      // === FUNÇÕES PADRÃO ===
+      function abrirModalSenha(cb) {
+        acaoPendente = cb;
+        document.getElementById("inputSenha").value = "";
+        document.getElementById("passwordModal").style.display = "flex";
+        setTimeout(() => document.getElementById("inputSenha").focus(), 100);
+      }
+      function fecharModalSenha() {
+        document.getElementById("passwordModal").style.display = "none";
+        acaoPendente = null;
+      }
+      function handleEnter(e) {
+        if (e.key === "Enter") confirmarComSenha();
+      }
+      function confirmarComSenha() {
+        const senha = document.getElementById("inputSenha").value;
+        if (!senha) return alert("Digite a senha!");
+        const d = acaoPendente;
+        fecharModalSenha();
+        if (d.tipo === "user") executarAcaoUsuario(d.ip, d.action, senha);
+        else if (d.tipo === "agenda")
+          executarCriarAgenda(d.titulo, d.horario, senha);
+      }
+
+      async function descobrirMaster() {
+        try {
+          const c = new AbortController();
+          const t = setTimeout(() => c.abort(), 500);
+          const r = await fetch(`http://127.0.0.1:5000/ping`, {
+            signal: c.signal,
+          });
+          clearTimeout(t);
+          if (r.ok) return "127.0.0.1";
+        } catch {}
+        return "127.0.0.1";
+      }
+
+      async function executarAcaoUsuario(ip, action, senha) {
+        if (action === "block" && !confirm("Bloquear?")) return;
+        toggleLoading(true);
+        const master = await descobrirMaster();
+        try {
+          const resp = await fetch(`http://${master}:5000/admin/update`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ target_ip: ip, action, senha: senha }),
+          });
+          const json = await resp.json();
+          if (!resp.ok) alert(`❌ Erro: ${json.error}`);
+          else await carregarUsuarios();
+        } catch (error) {
+          alert("❌ Erro de Rede: " + error.message);
+        } finally {
+          toggleLoading(false);
+        }
+      }
+
+      function prepararAcaoUsuario(ip, action) {
+        abrirModalSenha({ tipo: "user", ip, action });
+      }
+
+      async function carregarUsuarios() {
+        const master = await descobrirMaster();
+        const status = document.getElementById("statusMsg");
+        try {
+          const dados = await fetch(
+            `http://${master}:5000/permissions?t=${Date.now()}`
+          ).then((r) => r.json());
+          if (status) status.style.display = "none";
+          const lista = document.getElementById("listaUsuarios");
+          lista.innerHTML = "";
+          if (!dados.users || Object.keys(dados.users).length === 0) {
+            lista.innerHTML =
+              "<p style='text-align:center;color:#666'>Vazio</p>";
+            return;
+          }
+
+          Object.entries(dados.users)
+            .sort(([, a], [, b]) => {
+              const r = { master: 3, admin: 2, user: 1 };
+              return (r[b.role] || 0) - (r[a.role] || 0);
+            })
+            .forEach(([ip, usr]) => {
+              const isMaster = usr.role === "master";
+              const isAdmin = usr.role === "admin";
+              let badges = "";
+              if (isMaster)
+                badges = `<span class="badge badge-master">👑 MASTER</span>`;
+              else if (isAdmin)
+                badges = `<span class="badge badge-admin">🛡️ ADMIN</span>`;
+              else badges = `<span class="badge badge-user">👤 USER</span>`;
+              if (usr.blocked)
+                badges += `<span class="badge badge-blocked">⛔ BLOCK</span>`;
+              if (usr.muted)
+                badges += `<span class="badge badge-muted">🔇 MUTE</span>`;
+
+              let buttons = "";
+              if (isMaster)
+                buttons = `<span style="opacity:0.5;font-size:12px;">Intocável</span>`;
+              else {
+                buttons += usr.muted
+                  ? `<button class="btn-gray" onclick="executarAcaoUsuario('${ip}','unmute',null)">🔊</button>`
+                  : `<button class="btn-gray" onclick="executarAcaoUsuario('${ip}','mute',null)">🔇</button>`;
+                buttons += usr.blocked
+                  ? `<button class="btn-gray" onclick="executarAcaoUsuario('${ip}','unblock',null)">🔓</button>`
+                  : `<button class="btn-red" onclick="executarAcaoUsuario('${ip}','block',null)">⛔</button>`;
+                if (isAdmin)
+                  buttons += `<button class="btn-yellow" onclick="prepararAcaoUsuario('${ip}','demote')">⬇️ User</button>`;
+                else
+                  buttons += `<button class="btn-blue" onclick="prepararAcaoUsuario('${ip}','promote')">⬆️ Admin</button>`;
+              }
+              lista.innerHTML += `<div class="user-row"><div class="name">${usr.nome} ${badges} <span style="font-size:12px;color:#666;font-weight:normal;margin-left:5px">(${ip})</span></div><div class="actions">${buttons}</div></div>`;
+            });
+        } catch (e) {
+          if (status) {
+            status.style.display = "block";
+            status.innerText = "Erro dados.";
+          }
+        }
+      }
+
+      function pedirSenhaParaAgendar() {
+        const t = document.getElementById("agendaTitulo").value;
+        const h = document.getElementById("agendaHora").value;
+        if (!t || !h) return alert("Preencha!");
+        abrirModalSenha({ tipo: "agenda", titulo: t, horario: h });
+      }
+
+      async function executarCriarAgenda(t, h, s) {
+        toggleLoading(true);
+        const master = await descobrirMaster();
+        try {
+          const resp = await fetch(`http://${master}:5000/admin/schedule`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ titulo: t, horario: h, senha: s }),
+          });
+          if (resp.ok) {
+            document.getElementById("agendaTitulo").value = "";
+            carregarAgendamentos();
+          } else {
+            const j = await resp.json();
+            alert("Erro: " + j.error);
+          }
+        } catch (e) {
+          alert("Erro agenda");
+        }
+        toggleLoading(false);
+      }
+
+      async function carregarAgendamentos() {
+        const master = await descobrirMaster();
+        try {
+          const agenda = await fetch(
+            `http://${master}:5000/admin/schedules`
+          ).then((r) => r.json());
+          const lista = document.getElementById("listaAgendamentos");
+          if (lista) {
+            lista.innerHTML = "";
+            agenda.forEach((item) => {
+              lista.innerHTML += `<div class="schedule-item"><div><strong style="color:#1dacff;">${item.horario}</strong> <span style="margin-left:10px;">${item.titulo}</span></div><button onclick="deletarAgendamento(${item.id})" style="background:#ef4444; border:none; padding:5px 10px; border-radius:4px; color:white;">X</button></div>`;
+            });
+          }
+        } catch (e) {}
+      }
+
+      async function deletarAgendamento(id) {
+        if (!confirm("Remover?")) return;
+        toggleLoading(true);
+        const master = await descobrirMaster();
+        await fetch(`http://${master}:5000/admin/schedule/${id}`, {
+          method: "DELETE",
+        });
+        toggleLoading(false);
+        carregarAgendamentos();
+      }
+
+      carregarUsuarios();
+      carregarAgendamentos();
+      setInterval(() => {
+        if (
+          document.getElementById("simpleLoading").style.display === "none" &&
+          document.getElementById("passwordModal").style.display === "none" &&
+          document.getElementById("importModal").style.display === "none"
+        ) {
+          carregarUsuarios();
+          carregarAgendamentos();
+        }
+      }, 3000);
+    </script>
+  </body>
+</html>

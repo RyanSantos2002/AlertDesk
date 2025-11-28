@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "express": "^4.18.2",
+    "node-fetch": "^2.7.0",
     "play-sound": "^1.1.6",
     "socket.io": "^4.7.2"
   },
@@ -17,34 +18,35 @@
     "electron": "^28.2.0",
     "electron-builder": "^23.6.0"
   },
-  "build": {
+"build": {
     "appId": "com.alertdesk.receptor",
     "productName": "AlertDesk Receptor",
     "directories": {
       "output": "dist"
     },
+    
+    "asar": false,  
 
-    "files": [
+"files": [
       "main.js",
       "preload.js",
       "ui/**/*",
-      "config/**/*",
+      "users_default.json",  
+      "!config/*",           
       "node_modules/**/*"
     ],
-
-    "asar": true,
-
     "win": {
       "target": "nsis",
-      "icon": "ui/icon.ico"
+      "icon": "ui/icon.ico",
+      "requestedExecutionLevel": "asInvoker" 
     },
-
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true,
-      "shortcutName": "AlertDesk Receptor"
+      "shortcutName": "AlertDesk Receptor",
+      "deleteAppDataOnUninstall": true
     }
   }
 }

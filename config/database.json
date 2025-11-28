@@ -1,0 +1,76 @@
+{
+  "users": {
+    "172.28.6.20": {
+      "nome": "Ryan",
+      "role": "master",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.12": {
+      "nome": "Well",
+      "role": "admin",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.23": {
+      "nome": "Rafa",
+      "role": "admin",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.17": {
+      "nome": "Muller",
+      "role": "user",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.18": {
+      "nome": "Turco",
+      "role": "user",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.19": {
+      "nome": "Gato",
+      "role": "user",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.15": {
+      "nome": "Gustavo",
+      "role": "user",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.16": {
+      "nome": "Clovis",
+      "role": "admin",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.30": {
+      "nome": "Davi",
+      "role": "user",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.21": {
+      "nome": "Mafi",
+      "role": "user",
+      "blocked": false,
+      "muted": false
+    },
+    "172.28.6.13": {
+      "nome": "Vitor",
+      "role": "user",
+      "blocked": false,
+      "muted": false
+    },
+    "127.0.0.1": {
+      "nome": "Novo Usuário",
+      "role": "user",
+      "blocked": false,
+      "muted": false
+    }
+  }
+}
